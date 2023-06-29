@@ -9,7 +9,7 @@ from playhouse.cockroachdb import CockroachDatabase, ArrayField
 db_state_default = {"closed": None, "conn": None, "ctx": None, "transactions": None}
 db_state = ContextVar("db_state", default=db_state_default.copy())
 
-db = CockroachDatabase(COCKROACHDB_URL)
+db = CockroachDatabase(MIGRATE_URL)
 
 
 class PeeweeConnectionState(pw._ConnectionState):
@@ -134,8 +134,14 @@ def get_all_users():
 
 
 if __name__ == "__main__":
+    genres = Genre.select()
+    for genre in genres:
+        if genre.id not in [873356217396559873, 873356218721632257, 873356220241543169, 873356222107385857, 873357818664189953, 873357820106440705, 873360477850533889, 873360479202770945, 873440782150893569,873440783317663745,873440784667738113]:
+            q = Genre.delete().where(Genre.id == genre.id)
+            q.execute()
+
     # create_tables()
-    with db:
-        db.drop_tables([Event])
-        db.drop_tables([Venue, Venue_Ad, Artist_Ad, Artist])
-        db.create_tables([Venue, Venue_Ad, Artist_Ad, Artist, Event])
+    # with db:
+    #     db.drop_tables([Event])
+    #     db.drop_tables([Venue, Venue_Ad, Artist_Ad, Artist])
+    #     db.create_tables([Venue, Venue_Ad, Artist_Ad, Artist, Event])
